@@ -1,6 +1,4 @@
-import { PrismaAddressRepositorie } from '@/repositories/prisma/prisma-address-repository'
 import { makeregisterAddressUseCase } from '@/use-cases/factories/make-register-address-use-case'
-import { RegisterAddressUseCase } from '@/use-cases/registerAddress'
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
 
