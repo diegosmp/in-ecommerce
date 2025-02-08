@@ -1,22 +1,20 @@
 import { UsersAlreadyExistsError } from '@/use-cases/errors/users-already-exists-error'
+import { makeAuthenticateUseCase } from '@/use-cases/factories/make-authenticate-use-case'
 import { makeRegisterUseCase } from '@/use-cases/factories/make-register-use-case'
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
-export async function register(req: FastifyRequest, reply: FastifyReply) {
-    const registerBodySchema = z.object({
-        firstname: z.string().min(2),
-        lastname: z.string(),
-        phone: z.string(),
-        username: z.string(),
+export async function authenticate(req: FastifyRequest, reply: FastifyReply) {
+    const authenticateBodySchema = z.object({
+        email: z.string().email().optional(),
+        username: z.string().optional(),
         password: z.string(),
-        email: z.string().email()
     })
 
-    const { firstname, lastname, phone, email, password, username } = registerBodySchema.parse(req.body)
+    const { email, password, username } = authenticateBodySchema.parse(req.body)
     
     try {
-        const registerUseCase = makeRegisterUseCase()
-        await registerUseCase.execute({ firstname, lastname, phone, email, password, username })
+        const authenticateUseCase = makeAuthenticateUseCase()
+        await authenticateUseCase.execute({ email, password, username })
 
     } catch (error) {
         if(error instanceof UsersAlreadyExistsError) {
