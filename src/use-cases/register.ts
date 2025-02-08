@@ -11,11 +11,15 @@ interface RegisterUseCaseRequest {
 }
 
 export class RegisterUseCase {
-    constructor(private usersRepository: UserRepositorie) {
-
-    }
+    constructor(private usersRepository: UserRepositorie) {}
 
     async execute({email,firstname,lastname,password,phone,username}: RegisterUseCaseRequest){
+
+        const userWithSameEmail = await this.usersRepository.findOne(email)
+
+        if(userWithSameEmail) {
+            throw new Error('Email already exists')
+        }
 
         const password_hash = await hash(password, 6)
         
