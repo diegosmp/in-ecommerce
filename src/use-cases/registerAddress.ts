@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { hash } from "bcryptjs"
+import { AddressRepositorie } from "@/repositories/address-repository"
 
 interface RegisterAddressUseCaseRequest {
     street:string
@@ -10,6 +10,8 @@ interface RegisterAddressUseCaseRequest {
 }
 
 export class RegisterAddressUseCase {
+    constructor(private addressRepository: AddressRepositorie) {}
+
     async execute({city, neighborhood, street, uf, user_id}: RegisterAddressUseCaseRequest){
 
     if(!user_id) {
@@ -21,15 +23,7 @@ export class RegisterAddressUseCase {
         throw new Error('User not exists')
     } 
 
-    const address = await prisma.address.create({
-        data: {
-            city,
-            neighborhood,
-            street,
-            uf,
-            user_id
-        }
-    })
+    const address = this.addressRepository.create({city, neighborhood, street, uf, user_id})
 
     return address
         

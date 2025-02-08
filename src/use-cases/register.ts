@@ -1,4 +1,5 @@
-import { UserRepositorie } from "@/repositories/user-repositorie"
+import { PrismaUserRepositorie } from "@/repositories/prisma/prisma-user-repository"
+import { UserRepositorie } from "@/repositories/user-repository"
 import { hash } from "bcryptjs"
 
 interface RegisterUseCaseRequest {
@@ -11,12 +12,15 @@ interface RegisterUseCaseRequest {
 }
 
 export class RegisterUseCase {
+    constructor(private usersRepository: UserRepositorie) {
+
+    }
+
     async execute({email,firstname,lastname,password,phone,username}: RegisterUseCaseRequest){
 
         const password_hash = await hash(password, 6)
-        const userRegister = new UserRepositorie()
-        const user = await userRegister.create({email,firstname,lastname,password_hash,phone,username})
+        
+        await this.usersRepository.create({email,firstname,lastname,password_hash,phone,username})
 
-        return user
     }
 }
