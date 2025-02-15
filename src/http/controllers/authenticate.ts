@@ -13,7 +13,18 @@ export async function authenticate(req: FastifyRequest, reply: FastifyReply) {
     
     try {
         const authenticateUseCase = makeAuthenticateUseCase()
-        await authenticateUseCase.execute({ email, password, username })
+        const { user } = await authenticateUseCase.execute({ email, password, username })
+
+        const token = await reply.jwtSign(
+          {},
+          {
+            sign: {
+              sub: user.id
+            }
+          }
+        )
+
+        return reply.status(200).send({ token })
 
     } catch (error) {
         if(error instanceof UsersAlreadyExistsError) {
@@ -22,6 +33,4 @@ export async function authenticate(req: FastifyRequest, reply: FastifyReply) {
 
         return reply.status(500).send()
     }
-
-    return reply.status(201).send()
 }
